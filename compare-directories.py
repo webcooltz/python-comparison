@@ -2,6 +2,7 @@ import filecmp
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
+from tkinter import *
 
 
 def select_directory_1():
@@ -26,7 +27,7 @@ def compare_directories():
     # finds similarly-named directories
     # result_matching_directory_list.set(result.common_dirs.__str__())
 
-    # ----- finds differing files -----
+    # ---------- finds differing files ----------
     result_1 = result.left_list
     result_2 = result.right_list
     diff_array_1 = []
@@ -44,9 +45,19 @@ def compare_directories():
 
     result_diff_files_list_2.set(diff_array_2.__str__())
 
+    # --------------- new window with tabs to compare conflicting files -------------
+
     conflicting_files = result.diff_files
 
-# reads each conflicting file and displays the contents
+    new_window = Toplevel(window)
+    new_window.title("Compare Conflicting Files")
+    new_window.geometry("500x300")
+
+    # create a notebook
+    notebook = ttk.Notebook(new_window)
+    notebook.pack(fill=BOTH, expand=1)
+
+    # creates a new tab for each file
     for file in conflicting_files:
         file_opener1 = open(d1_text.get() + "/" + file, "r")
         file_opener2 = open(d2_text.get() + "/" + file, "r")
@@ -57,8 +68,44 @@ def compare_directories():
         d1_result_diff_files.set(file_reader1)
         d2_result_diff_files.set(file_reader2)
 
+        new_frame = ttk.Frame(notebook, width=400, height=280)
+        new_frame.pack(fill='both', expand=True)
+        notebook.add(new_frame, text=file.__str__())
+
+        frame_left = ttk.Frame(new_frame)
+        frame_left.pack(side=LEFT, expand=True)
+        frame_top_left = ttk.Frame(frame_left)
+        frame_top_left.pack(side=TOP, expand=False)
+        title1 = tk.Label(frame_top_left, text="Directory 1")
+        title1.pack(side=TOP)
+        frame_bottom_left = ttk.Frame(frame_left)
+        frame_bottom_left.pack(side=BOTTOM, expand=True)
+        file_data1 = tk.Label(frame_bottom_left, text=file_reader1)
+        file_data1.pack()
+
+        frame_right = ttk.Frame(new_frame)
+        frame_right.pack(side=RIGHT, expand=True)
+        frame_top_right = ttk.Frame(frame_right)
+        frame_top_right.pack(side=TOP, expand=False)
+        title2 = tk.Label(frame_top_right, text="Directory 2")
+        title2.pack(side=TOP)
+        frame_bottom_right = ttk.Frame(frame_right)
+        frame_bottom_right.pack(side=BOTTOM, expand=True)
+        file_data2 = tk.Label(frame_bottom_right, text=file_reader2)
+        file_data2.pack()
+
         file_opener1.close()
         file_opener2.close()
+
+        # scrollbar1 = Scrollbar(frame_bottom_left)
+        # scrollbar1.pack(side=RIGHT, fill=Y)
+        #
+        # mylist = Listbox(new_frame, yscrollcommand=scrollbar1.set)
+        # for line in range(100):
+        #     mylist.insert(END, "This is line number " + str(line))
+        #
+        # mylist.pack(side=LEFT, fill=BOTH)
+        # scrollbar1.config(command=mylist.yview)
 
 
 # establishes the main GUI window
@@ -118,24 +165,10 @@ diff_files_label_1 = tk.Label(window, textvariable=result_diff_files_list_1).gri
 diff_files_label_2 = tk.Label(window, textvariable=result_diff_files_list_2).grid(row=9, column=1)
 
 # printed file labels
-tk.Label(window, text="d1 file:").grid(row=10, column=0)
-tk.Label(window, text="d2 file:").grid(row=10, column=1)
-d1_diff_file_label = tk.Label(window, textvariable=d1_result_diff_files).grid(row=11, column=0)
-d2_diff_file_label = tk.Label(window, textvariable=d2_result_diff_files).grid(row=11, column=1)
-
-# create a notebook
-# notebook = ttk.Notebook(window).grid(row=12, column=0)
-
-# create frames
-# frame1 = ttk.Frame(notebook, width=400, height=280).grid(row=13, column=0)
-# frame2 = ttk.Frame(notebook, width=400, height=280).grid(row=13, column=1)
-
-# frame1.pack(fill='both', expand=False)
-# frame2.pack(fill='both', expand=False)
-
-# add frames to notebook
-# notebook.add(frame1, text='General Information')
-# notebook.add(frame2, text='Profile')
+# tk.Label(window, text="d1 file:").grid(row=10, column=0)
+# tk.Label(window, text="d2 file:").grid(row=10, column=1)
+# d1_diff_file_label = tk.Label(window, textvariable=d1_result_diff_files).grid(row=11, column=0)
+# d2_diff_file_label = tk.Label(window, textvariable=d2_result_diff_files).grid(row=11, column=1)
 
 window.mainloop()
 tk.mainloop()
@@ -143,10 +176,11 @@ tk.mainloop()
 # D:/projects-coding/python/python-comparison/d1
 # D:/projects-coding/python/python-comparison/d2
 
-# TODO - Get different files and list them
-# TODO - Add tabs or buttons to show each file comparison
+# TODO - Clean up tabs to make it look nicer
+# TODO - Add links from each file to open up?
+# TODO - Add red or green text to show differences
 # TODO - Compare line-by-line and -- show the differences on the GUI
 # TODO - List subdirectories/ their files and compare those
 # TODO - Add error handling
 # TODO - Add limits to prevent memory leaks, crashes, etc.
-# TODO - Prevent from being run multiple times?
+# TODO - Prevent from being run multiple times? -- It may be fixed
